@@ -1,0 +1,4 @@
+node_modules/
+finance.db
+*.log
+.DS_Store

@@ -1,0 +1,72 @@
+{
+  "name": "WELLTH APP - Personal Finance Manager",
+  "short_name": "WELLTH",
+  "description": "Advanced Personal Finance Management Tool - Track income, expenses, assets, and manage financial goals",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#3498db",
+  "icons": [
+    {
+      "src": "/Wellth.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/Wellth.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/Wellth.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/Wellth.jpg",
+      "sizes": "540x720",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/Wellth.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ],
+  "categories": ["finance", "productivity"],
+  "shortcuts": [
+    {
+      "name": "View Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your financial dashboard",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/Wellth.jpg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Track Expenses",
+      "short_name": "Expenses",
+      "description": "Track your expenses",
+      "url": "/expenses",
+      "icons": [
+        {
+          "src": "/Wellth.jpg",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
