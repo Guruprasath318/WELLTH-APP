@@ -39,19 +39,22 @@ export function MarketTicker() {
   }));
 
   return (
-    <div className="market-ticker-container">
+    <div className="market-ticker-container" role="region" aria-label="Live market ticker">
       <style>{`
         .market-ticker-container {
           background: linear-gradient(135deg, rgba(26, 26, 46, 0.04), rgba(45, 45, 68, 0.04));
           border-top: 2px solid var(--primary-color);
           border-bottom: 1px solid var(--border-color);
           overflow: hidden;
-          height: 64px;
+          height: var(--ticker-height, 64px);
           display: flex;
           align-items: center;
-          position: relative;
+          position: fixed;
+          top: var(--navbar-height, 70px);
+          left: 0;
+          right: 0;
+          z-index: 900;
           flex-shrink: 0;
-          margin-top: 70px;
         }
 
         html.dark-mode .market-ticker-container {

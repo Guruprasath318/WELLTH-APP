@@ -37,9 +37,26 @@ if (allowedOriginsEnv.trim()) {
     origin: (origin, callback) => {
       // Allow requests with no origin (e.g., mobile apps, curl)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1) {
+
+      const normalizedOrigin = origin.trim();
+      if (allowedOrigins.includes(normalizedOrigin)) {
         return callback(null, true);
       }
+
+      try {
+        const { hostname, protocol } = new URL(normalizedOrigin);
+        const isLocalhost = ['localhost', '127.0.0.1', '::1'].includes(hostname)
+          || hostname.startsWith('localhost.')
+          || hostname.startsWith('127.0.0.1')
+          || hostname.startsWith('[::1]');
+
+        if (protocol.startsWith('http') && isLocalhost) {
+          return callback(null, true);
+        }
+      } catch {
+        // ignore malformed origin strings here; they will fail below
+      }
+
       return callback(new Error('CORS policy: Origin not allowed'), false);
     }
   };

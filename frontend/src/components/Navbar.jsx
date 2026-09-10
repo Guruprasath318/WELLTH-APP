@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useFinance } from '../hooks/useFinance';
 import { useAuth } from '../hooks/useAuth';
 import { useDarkMode } from '../hooks/useDarkMode';
-import { FaMoon, FaSun, FaUser, FaRightFromBracket, FaGear, FaBars, FaXmark, FaCompress, FaExpand, FaEyeSlash } from 'react-icons/fa6';
+import { FaMoon, FaSun, FaUser, FaRightFromBracket, FaGear, FaBars, FaXmark, FaBell, FaChartSimple } from 'react-icons/fa6';
 
-export function Navbar({ onMenuToggle = () => {}, isMobileMenuOpen = false, onSidebarCollapseToggle = () => {}, onSidebarHiddenToggle = () => {}, sidebarMode = 'expanded' }) {
+export function Navbar({ onMenuToggle = () => {}, isMobileMenuOpen = false, sidebarMode = 'expanded' }) {
   const navigate = useNavigate();
   const finance = useFinance();
   const data = finance?.data;
@@ -35,9 +35,6 @@ export function Navbar({ onMenuToggle = () => {}, isMobileMenuOpen = false, onSi
     navigate('/settings');
   };
 
-  const collapseLabel = sidebarMode === 'collapsed' ? 'Expand sidebar' : 'Collapse sidebar';
-  const hideLabel = sidebarMode === 'hidden' ? 'Show sidebar' : 'Hide sidebar';
-
   return (
     <nav className="navbar">
       <div className="navbar-left">
@@ -62,32 +59,16 @@ export function Navbar({ onMenuToggle = () => {}, isMobileMenuOpen = false, onSi
       </div>
 
       <div className="navbar-right">
-        <button
-          type="button"
-          className="navbar-btn"
-          onClick={onSidebarCollapseToggle}
-          aria-controls="primary-navigation"
-          aria-pressed={sidebarMode === 'collapsed'}
-          aria-label={collapseLabel}
-          title={collapseLabel}
-        >
-          {sidebarMode === 'collapsed' ? <FaExpand size={18} /> : <FaCompress size={18} />}
-        </button>
-
-        <button
-          type="button"
-          className="navbar-btn hide-sidebar-btn"
-          onClick={onSidebarHiddenToggle}
-          aria-controls="primary-navigation"
-          aria-pressed={sidebarMode === 'hidden'}
-          aria-label={hideLabel}
-          title={hideLabel}
-        >
-          {sidebarMode === 'hidden' ? <FaBars size={18} /> : <FaEyeSlash size={18} />}
-        </button>
-
         <button className="navbar-btn" onClick={toggleDarkMode} aria-label="Toggle Dark Mode" title="Toggle Dark Mode">
           {darkMode ? <FaSun size={18} /> : <FaMoon size={18} />}
+        </button>
+
+        <button className="navbar-btn" aria-label="Market overview" title="Market overview">
+          <FaChartSimple size={18} />
+        </button>
+
+        <button className="navbar-btn" aria-label="Notifications" title="Notifications">
+          <FaBell size={18} />
         </button>
 
         <div className="navbar-profile" ref={profileRef}>
