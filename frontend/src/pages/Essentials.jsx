@@ -1,12 +1,12 @@
 import { useFinance } from '../hooks/useFinance';
-import { FaChartLine, FaCheck } from 'react-icons/fa6';
+import { FaCircleCheck, FaCheck } from 'react-icons/fa6';
 import { formatCurrency, calculateSavingsRate, getSavingsStatus } from '../utils/storage';
 
 export function Essentials() {
   const { data, loading } = useFinance();
 
   if (loading || !data) {
-    return <><h1 className="page-title">Essentials</h1><p>Loading...</p></>;
+    return <><h1 className="page-title"><FaCircleCheck style={{ display: 'inline', marginRight: '8px' }} /> Essentials</h1><p>Loading...</p></>;
   }
 
   const profile = data.profile;
@@ -31,7 +31,7 @@ export function Essentials() {
 
   return (
     <>
-      <h1 className="page-title"><FaChartLine style={{ display: 'inline', marginRight: '8px' }} /> Essentials</h1>
+      <h1 className="page-title"><FaCircleCheck style={{ display: 'inline', marginRight: '8px' }} /> Essentials</h1>
 
       <div className="dashboard-cards" style={{ marginBottom: '40px' }}>
         <div className="card">
@@ -65,7 +65,7 @@ export function Essentials() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
+      <div className="responsive-page-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
         <div className="card">
           <h2 style={{ fontSize: '18px', marginBottom: '20px' }}>50/30/20 Rule</h2>
           <p style={{ marginBottom: '20px', color: '#7f8c8d', fontSize: '14px' }}>

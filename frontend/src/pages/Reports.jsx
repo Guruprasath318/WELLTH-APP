@@ -1,12 +1,12 @@
 import { useFinance } from '../hooks/useFinance';
-import { FaChartBar } from 'react-icons/fa6';
+import { FaFileLines } from 'react-icons/fa6';
 import { formatCurrency } from '../utils/storage';
 
 export function Reports() {
   const { data, loading } = useFinance();
 
   if (loading || !data) {
-    return <><h1 className="page-title">Reports</h1><p>Loading...</p></>;
+    return <><h1 className="page-title"><FaFileLines style={{ display: 'inline', marginRight: '8px' }} /> Reports</h1><p>Loading...</p></>;
   }
 
   const totalIncome = data.incomes.reduce((sum, income) => sum + income.amount, 0);
@@ -31,7 +31,7 @@ export function Reports() {
 
   return (
     <>
-      <h1 className="page-title"><FaChartBar style={{ display: 'inline', marginRight: '8px' }} /> Reports</h1>
+      <h1 className="page-title"><FaFileLines style={{ display: 'inline', marginRight: '8px' }} /> Reports</h1>
 
       <div className="dashboard-cards" style={{ marginBottom: '40px' }}>
         <div className="card">
@@ -63,7 +63,7 @@ export function Reports() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '30px', marginTop: '30px' }}>
+      <div className="responsive-page-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '30px', marginTop: '30px' }}>
         {/* Category Breakdown Card */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
           <h2 style={{ fontSize: '18px', marginBottom: '20px', fontWeight: '600' }}>Expenses by Category</h2>

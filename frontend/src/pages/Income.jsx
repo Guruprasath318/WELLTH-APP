@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useFinance } from '../hooks/useFinance';
-import { FaTrash, FaPenToSquare } from 'react-icons/fa6';
+import { FaTrash, FaPenToSquare, FaArrowUp } from 'react-icons/fa6';
 import { formatCurrency } from '../utils/storage';
 
 export function Income() {
@@ -17,7 +17,7 @@ export function Income() {
   });
 
   if (loading || !data) {
-    return <><h1 className="page-title">Income</h1><p>Loading...</p></>;
+    return <><h1 className="page-title"><FaArrowUp style={{ display: 'inline', marginRight: '8px' }} /> Income</h1><p>Loading...</p></>;
   }
 
   const frequencies = ['One-time', 'Weekly', 'Bi-weekly', 'Monthly', 'Quarterly', 'Yearly'];
@@ -127,7 +127,7 @@ export function Income() {
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1 className="page-title"><span style={{ display: 'inline', marginRight: '8px', fontSize: '36px' }}>₹</span> Income</h1>
+        <h1 className="page-title"><FaArrowUp style={{ display: 'inline', marginRight: '8px' }} /> Income</h1>
         <button 
           className="btn btn-primary"
           onClick={() => {

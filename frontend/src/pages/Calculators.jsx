@@ -274,7 +274,7 @@ export function Calculators() {
 
   return (
     <>
-      <h1 className="page-title"><FaPercent style={{ display: 'inline', marginRight: '8px' }} /> Financial Calculators</h1>
+      <h1 className="page-title"><FaPercent style={{ display: 'inline', marginRight: '8px' }} /> Calculators</h1>
 
       {/* Tabs */}
       <div className="calculator-tabs" style={{ display: 'flex', gap: '10px', marginBottom: '30px', flexWrap: 'wrap' }}>
@@ -499,6 +499,7 @@ export function Calculators() {
             <FaTableCells /> {activeTab === 'EMI' ? 'Loan Amortization Schedule' : activeTab === 'Inflation' ? 'Inflation Impact Projection' : 'Yearly Growth Projections'}
           </h2>
           <div style={{ overflowX: 'auto' }}>
+            <div className="responsive-table-wrap">
             <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
@@ -529,6 +530,7 @@ export function Calculators() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}

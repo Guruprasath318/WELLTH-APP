@@ -14,7 +14,7 @@ export function Accounts() {
   });
 
   if (loading || !data) {
-    return <><h1 className="page-title">Accounts</h1><p>Loading...</p></>;
+    return <><h1 className="page-title"><FaCreditCard style={{ display: 'inline', marginRight: '8px' }} /> Accounts</h1><p>Loading...</p></>;
   }
 
   const accountTypes = ['Bank Account', 'Credit Card', 'Digital Wallet', 'Investment Account', 'Savings Account'];

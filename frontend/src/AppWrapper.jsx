@@ -1,11 +1,19 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import App from './App.jsx';
+import CreateAccount from './pages/CreateAccount';
 import Login from './pages/Login';
 
 function AppWrapper() {
   const { isAuthenticated, loading } = useAuth();
+  const [showLogin, setShowLogin] = useState(true);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setShowLogin(true);
+    }
+  }, [isAuthenticated]);
 
   if (loading) {
     return (
@@ -51,7 +59,11 @@ function AppWrapper() {
 
   return (
     <Router>
-      {isAuthenticated ? <App /> : <Login />}
+      {isAuthenticated ? <App /> : showLogin ? (
+        <Login onSwitchToSignup={() => setShowLogin(false)} />
+      ) : (
+        <CreateAccount onSwitchToLogin={() => setShowLogin(true)} />
+      )}
     </Router>
   );
 }

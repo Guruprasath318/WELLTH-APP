@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useFinance } from '../hooks/useFinance';
-import { FaBullseye } from 'react-icons/fa6';
+import { FaChartPie } from 'react-icons/fa6';
 import { formatCurrency } from '../utils/storage';
 
 export function Budget() {
@@ -13,7 +13,7 @@ export function Budget() {
   });
 
   if (loading || !data) {
-    return <><h1 className="page-title">Budget</h1><p>Loading...</p></>;
+    return <><h1 className="page-title"><FaChartPie style={{ display: 'inline', marginRight: '8px' }} /> Money</h1><p>Loading...</p></>;
   }
 
   const handleInputChange = (e) => {
@@ -42,7 +42,7 @@ export function Budget() {
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1 className="page-title"><FaBullseye style={{ display: 'inline', marginRight: '8px' }} /> Budget</h1>
+        <h1 className="page-title"><FaChartPie style={{ display: 'inline', marginRight: '8px' }} /> Money</h1>
         <button 
           className="btn btn-primary"
           onClick={() => setShowForm(!showForm)}

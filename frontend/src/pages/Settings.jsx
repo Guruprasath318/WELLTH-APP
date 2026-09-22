@@ -1,51 +1,64 @@
 import { useState, useEffect } from 'react';
 import { useFinance } from '../hooks/useFinance';
+import { useAuth } from '../hooks/useAuth';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { FaGear, FaMoon, FaSun } from 'react-icons/fa6';
 
 export function Settings() {
   const { data, loading, updateProfile } = useFinance();
+  const { user, updateUser, changePassword } = useAuth();
   const { darkMode, toggleDarkMode } = useDarkMode();
   const [formData, setFormData] = useState({
+    username: '',
     age: 0,
-    total_income: 0,
-    total_expenses: 0,
-    total_savings: 0
+    date_of_birth: ''
   });
+  const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
 
   useEffect(() => {
     if (data?.profile) {
       setFormData({
+        username: user?.username || '',
         age: data.profile.age || 0,
-        total_income: data.profile.total_income || data.profile.income || 0,
-        total_expenses: data.profile.total_expenses || data.profile.expenses || 0,
-        total_savings: data.profile.total_savings || data.profile.savings || 0
+        date_of_birth: data.profile.date_of_birth || ''
       });
     }
-  }, [data]);
+  }, [data, user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'age' ? parseInt(value) : parseFloat(value)
-    }));
+    setFormData(prev => ({ ...prev, [name]: name === 'age' ? parseInt(value, 10) || 0 : value }));
   };
 
-  const handleSubmit = (e) => {
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Map frontend field names to backend field names
-    updateProfile({
+    await updateProfile({
+      username: formData.username,
       age: formData.age,
-      total_income: formData.total_income,
-      total_expenses: formData.total_expenses,
-      total_savings: formData.total_savings
+      date_of_birth: formData.date_of_birth || null
     });
+    updateUser({ username: formData.username });
     alert('Profile updated successfully!');
   };
 
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await changePassword(passwordData.currentPassword, passwordData.newPassword, passwordData.confirmPassword);
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      alert('Password changed successfully!');
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   if (loading || !data) {
-    return <><h1 className="page-title">Settings</h1><p>Loading...</p></>;
+    return <><h1 className="page-title"><FaGear style={{ display: 'inline', marginRight: '8px' }} /> Settings</h1><p>Loading...</p></>;
   }
 
   return (
@@ -55,6 +68,11 @@ export function Settings() {
       <div className="card" style={{ maxWidth: '600px' }}>
         <h2 style={{ fontSize: '18px', marginBottom: '20px' }}>Profile Settings</h2>
         <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input id="username" type="text" name="username" value={formData.username} onChange={handleInputChange} minLength="3" maxLength="32" required />
+          </div>
+
           <div className="form-group">
             <label htmlFor="age">Age</label>
             <input
@@ -67,44 +85,32 @@ export function Settings() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="total_income">Annual Income</label>
-            <input
-              id="total_income"
-              type="number"
-              name="total_income"
-              step="0.01"
-              value={formData.total_income}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="total_expenses">Annual Expenses</label>
-            <input
-              id="total_expenses"
-              type="number"
-              name="total_expenses"
-              step="0.01"
-              value={formData.total_expenses}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="total_savings">Annual Savings Goal</label>
-            <input
-              id="total_savings"
-              type="number"
-              name="total_savings"
-              step="0.01"
-              value={formData.total_savings}
-              onChange={handleInputChange}
-            />
+            <label htmlFor="date_of_birth">Date of birth</label>
+            <input id="date_of_birth" type="date" name="date_of_birth" value={formData.date_of_birth} onChange={handleInputChange} />
           </div>
 
           <button type="submit" className="btn btn-success">
             Save Settings
           </button>
+        </form>
+      </div>
+
+      <div className="card" style={{ maxWidth: '600px', marginTop: '30px' }}>
+        <h2 style={{ fontSize: '18px', marginBottom: '20px' }}>Change Password</h2>
+        <form onSubmit={handlePasswordSubmit}>
+          <div className="form-group">
+            <label htmlFor="currentPassword">Current password</label>
+            <input id="currentPassword" type="password" name="currentPassword" value={passwordData.currentPassword} onChange={handlePasswordChange} autoComplete="current-password" required />
+          </div>
+          <div className="form-group">
+            <label htmlFor="newPassword">New password</label>
+            <input id="newPassword" type="password" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} autoComplete="new-password" minLength="6" required />
+          </div>
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm new password</label>
+            <input id="confirmPassword" type="password" name="confirmPassword" value={passwordData.confirmPassword} onChange={handlePasswordChange} autoComplete="new-password" minLength="6" required />
+          </div>
+          <button type="submit" className="btn btn-success">Change Password</button>
         </form>
       </div>
 

@@ -15,7 +15,7 @@ export function Goals() {
   });
 
   if (loading || !data) {
-    return <><h1 className="page-title">Goals</h1><p>Loading...</p></>;
+    return <><h1 className="page-title"><FaBullseye style={{ display: 'inline', marginRight: '8px' }} /> Goals</h1><p>Loading...</p></>;
   }
 
   const handleInputChange = (e) => {
@@ -90,7 +90,7 @@ export function Goals() {
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1 className="page-title"><FaBullseye style={{ display: 'inline', marginRight: '8px' }} /> Financial Goals</h1>
+        <h1 className="page-title"><FaBullseye style={{ display: 'inline', marginRight: '8px' }} /> Goals</h1>
         <button 
           className="btn btn-primary"
           onClick={() => setShowForm(!showForm)}

@@ -106,6 +106,7 @@ export async function initDatabase() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER UNIQUE NOT NULL,
       age INTEGER,
+      date_of_birth TEXT,
       total_income REAL DEFAULT 0,
       total_expenses REAL DEFAULT 0,
       total_savings REAL DEFAULT 0,
@@ -135,34 +136,33 @@ export async function initDatabase() {
   await ensureColumn('users', 'password_hash', 'TEXT');
   await ensureColumn('users', 'created_at', "DATETIME DEFAULT CURRENT_TIMESTAMP");
   await ensureColumn('users', 'updated_at', "DATETIME DEFAULT CURRENT_TIMESTAMP");
+  await ensureColumn('profile', 'date_of_birth', 'TEXT');
 
-  // Create default user
+  // Create the shared account used for first-time and hosted access.
   try {
-    // Only create a default development user when explicitly allowed via env
-    const allowDevUser = process.env.ALLOW_DEV_USER === 'true';
-    if (allowDevUser) {
+    const allowDefaultUser = process.env.ALLOW_DEFAULT_USER === 'true';
+    const defaultUsername = process.env.DEFAULT_USER_USERNAME || 'WELLTH_USER';
+    const defaultEmail = (process.env.DEFAULT_USER_EMAIL || 'demo@wellth.app').trim().toLowerCase();
+    const defaultPassword = process.env.DEFAULT_USER_PASSWORD || 'Wellth@2026';
+
+    if (allowDefaultUser) {
       const existingUser = await db.get(
-        'SELECT * FROM users WHERE username = ?',
-        ['GURUPRASATH']
+        'SELECT * FROM users WHERE LOWER(email) = ? OR LOWER(username) = ?',
+        [defaultEmail, defaultUsername.toLowerCase()]
       );
 
       if (!existingUser) {
-        const passwordHash = await hashPassword('gp2004');
+        const passwordHash = await hashPassword(defaultPassword);
         const result = await db.run(
           'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
-          ['GURUPRASATH', 'guruprasath@wellth.app', passwordHash]
+          [defaultUsername, defaultEmail, passwordHash]
         );
 
-        // Create profile for default user
-        await db.run(
-          'INSERT INTO profile (user_id) VALUES (?)',
-          [result.lastID]
-        );
-
-        console.log('✓ Default user created: GURUPRASATH (dev only)');
+        await db.run('INSERT INTO profile (user_id) VALUES (?)', [result.lastID]);
+        console.log(`Default user created: ${defaultEmail}`);
       }
     } else {
-      console.log('Skipping default dev user creation (ALLOW_DEV_USER not set)');
+      console.log('Skipping default user creation (ALLOW_DEFAULT_USER=false)');
     }
   } catch (error) {
     console.error('Error creating default user:', error);

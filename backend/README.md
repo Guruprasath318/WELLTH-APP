@@ -59,6 +59,23 @@ npm run dev
 
 Leave the backend terminal window open while you're developing/testing the frontend.
 
+### Default Hosted Login
+
+On startup, the backend creates this account if it does not already exist:
+
+- Email: `demo@wellth.app`
+- Password: `Wellth@2026`
+
+Set these environment variables before deployment to use different shared credentials:
+
+```env
+DEFAULT_USER_EMAIL=demo@your-domain.com
+DEFAULT_USER_PASSWORD=your-strong-password
+DEFAULT_USER_USERNAME=YOUR_USERNAME
+```
+
+Set `ALLOW_DEFAULT_USER=false` when shared default access should be disabled.
+
 ## API Endpoints
 
 The backend provides these endpoints (all prefixed with `/api`):

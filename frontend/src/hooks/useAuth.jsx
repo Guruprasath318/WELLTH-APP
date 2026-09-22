@@ -25,7 +25,7 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (username, password) => {
     setLoading(true);
     setError(null);
 
@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (!response.ok) {
@@ -63,7 +63,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const signup = async (displayName, email, password, confirmPassword) => {
+  const signup = async (username, password, confirmPassword) => {
     setLoading(true);
     setError(null);
 
@@ -74,7 +74,7 @@ export function AuthProvider({ children }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username: displayName, email, password, confirmPassword }),
+        body: JSON.stringify({ username, password, confirmPassword }),
       });
 
       if (!response.ok) {
@@ -109,6 +109,35 @@ export function AuthProvider({ children }) {
     setError(null);
   };
 
+  const changePassword = async (currentPassword, newPassword, confirmPassword) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${API_URL}/auth/change-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Password change failed');
+      }
+
+      return data;
+    } catch (err) {
+      setError(err.message || 'Password change failed');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const updateUser = (userData) => {
     const updatedUser = { ...user, ...userData };
     localStorage.setItem('user', JSON.stringify(updatedUser));
@@ -122,6 +151,7 @@ export function AuthProvider({ children }) {
     error,
     login,
     signup,
+    changePassword,
     logout,
     updateUser,
     isAuthenticated: !!user && !!token,

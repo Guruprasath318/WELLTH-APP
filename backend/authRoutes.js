@@ -4,6 +4,7 @@ import {
   createUser,
   findUserByIdentifier,
   comparePassword,
+  hashPassword,
   generateJWT,
   verifyJWT,
   getUserData
@@ -31,7 +32,7 @@ export function authenticateToken(req, res, next) {
 
 router.post('/signup',
   [
-    body('email').isEmail().withMessage('Invalid email').normalizeEmail(),
+    body('username').isString().trim().matches(/^[a-zA-Z0-9._-]+$/).isLength({ min: 3, max: 32 }).withMessage('Username must be 3-32 letters, numbers, dots, underscores, or hyphens'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
     body('confirmPassword').exists().withMessage('Please confirm your password')
   ],
@@ -41,16 +42,11 @@ router.post('/signup',
       return res.status(400).json({ errors: errors.array() });
     }
   try {
-    const { username, email, password, confirmPassword, displayName } = req.body;
-    const normalizedEmail = (email || '').trim().toLowerCase();
-    const normalizedUsername = (username || displayName || '').trim();
+    const { username, password, confirmPassword } = req.body;
+    const normalizedUsername = (username || '').trim();
 
-    if (!normalizedEmail || !password || !confirmPassword) {
-      return res.status(400).json({ error: 'Email, password, and confirmation are required' });
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      return res.status(400).json({ error: 'Please provide a valid email address' });
+    if (!normalizedUsername || !password || !confirmPassword) {
+      return res.status(400).json({ error: 'Username, password, and confirmation are required' });
     }
 
     if (password !== confirmPassword) {
@@ -61,7 +57,7 @@ router.post('/signup',
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
 
-    const user = await createUser(normalizedUsername, normalizedEmail, password);
+    const user = await createUser(normalizedUsername, null, password);
     const token = generateJWT(user);
     const userData = await getUserData(user.id);
 
@@ -82,8 +78,7 @@ router.post('/signup',
 
 router.post('/login',
   [
-    body('email').optional().isString(),
-    body('username').optional().isString(),
+    body('username').isString().trim().isLength({ min: 3, max: 32 }).withMessage('Username is required'),
     body('password').isString().withMessage('Password is required')
   ],
   async (req, res) => {
@@ -92,21 +87,21 @@ router.post('/login',
       return res.status(400).json({ errors: errors.array() });
     }
   try {
-    const { email, username, password } = req.body;
-    const identifier = (email || username || '').trim();
+    const { username, password } = req.body;
+    const identifier = (username || '').trim();
 
     if (!identifier || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+      return res.status(400).json({ error: 'Username and password are required' });
     }
 
     const user = await findUserByIdentifier(identifier);
     if (!user) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: 'Invalid username or password' });
     }
 
     const isPasswordValid = await comparePassword(password, user.password_hash);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: 'Invalid username or password' });
     }
 
     const token = generateJWT(user);
@@ -151,6 +146,38 @@ router.get('/me', authenticateToken, async (req, res) => {
 
 router.post('/logout', authenticateToken, (req, res) => {
   res.json({ success: true, message: 'Logged out successfully' });
+});
+
+router.post('/change-password', [
+  body('currentPassword').isString().notEmpty().withMessage('Current password is required'),
+  body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters'),
+  body('confirmPassword').isString().withMessage('Please confirm your new password')
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ error: 'New passwords do not match' });
+    }
+
+    const db = getDatabase();
+    const user = await db.get('SELECT password_hash FROM users WHERE id = ?', [req.user.id]);
+    const isCurrentPasswordValid = user && await comparePassword(currentPassword, user.password_hash);
+
+    if (!isCurrentPasswordValid) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    const passwordHash = await hashPassword(newPassword);
+    await db.run('UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [passwordHash, req.user.id]);
+    res.json({ success: true, message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 export default router;

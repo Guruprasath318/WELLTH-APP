@@ -509,7 +509,9 @@ router.delete('/budgets/:id', async (req, res) => {
 // Update profile
 router.put('/profile',
   [
+    body('username').optional().trim().matches(/^[a-zA-Z0-9._-]+$/).isLength({ min: 3, max: 32 }),
     body('age').optional().isInt({ min: 0 }),
+    body('date_of_birth').optional().isISO8601().withMessage('Date of birth must be a valid date'),
     body('total_income').optional().isFloat({ min: 0 }),
     body('total_expenses').optional().isFloat({ min: 0 }),
     body('total_savings').optional().isFloat({ min: 0 })
@@ -520,23 +522,31 @@ router.put('/profile',
   try {
     const db = getDatabase();
     const userId = req.user.id;
-    const { age, total_income, total_expenses, total_savings } = req.body;
+    const { username, age, date_of_birth, total_income, total_expenses, total_savings } = req.body;
+
+    if (username) {
+      const existingUser = await db.get('SELECT id FROM users WHERE LOWER(username) = LOWER(?) AND id != ?', [username.trim(), userId]);
+      if (existingUser) {
+        return res.status(409).json({ error: 'That username is already taken' });
+      }
+      await db.run('UPDATE users SET username = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [username.trim(), userId]);
+    }
 
     let profile = await db.get('SELECT id FROM profile WHERE user_id = ?', [userId]);
 
     if (profile) {
       await db.run(
-        'UPDATE profile SET age = ?, total_income = ?, total_expenses = ?, total_savings = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?',
-        [age || 0, total_income || 0, total_expenses || 0, total_savings || 0, userId]
+        'UPDATE profile SET age = ?, date_of_birth = ?, total_income = ?, total_expenses = ?, total_savings = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?',
+        [age || 0, date_of_birth || null, total_income || 0, total_expenses || 0, total_savings || 0, userId]
       );
     } else {
       await db.run(
-        'INSERT INTO profile (user_id, age, total_income, total_expenses, total_savings) VALUES (?, ?, ?, ?, ?)',
-        [userId, age || 0, total_income || 0, total_expenses || 0, total_savings || 0]
+        'INSERT INTO profile (user_id, age, date_of_birth, total_income, total_expenses, total_savings) VALUES (?, ?, ?, ?, ?, ?)',
+        [userId, age || 0, date_of_birth || null, total_income || 0, total_expenses || 0, total_savings || 0]
       );
     }
 
-    res.json({ age: age || 0, total_income: total_income || 0, total_expenses: total_expenses || 0, total_savings: total_savings || 0 });
+    res.json({ username, age: age || 0, date_of_birth: date_of_birth || null, total_income: total_income || 0, total_expenses: total_expenses || 0, total_savings: total_savings || 0 });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

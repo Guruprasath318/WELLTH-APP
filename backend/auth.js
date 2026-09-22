@@ -37,10 +37,10 @@ function buildUsername(username, email) {
 export async function createUser(username, email, password) {
   const db = getDatabase();
   const normalizedUsername = buildUsername(username, email);
-  const normalizedEmail = (email || '').trim().toLowerCase();
+  const normalizedEmail = (email || `${normalizedUsername.toLowerCase()}@accounts.wellth.local`).trim().toLowerCase();
 
-  if (!normalizedEmail || !password) {
-    throw new Error('Email and password are required');
+  if (!normalizedUsername || !password) {
+    throw new Error('Username and password are required');
   }
 
   try {
@@ -50,7 +50,7 @@ export async function createUser(username, email, password) {
     );
 
     if (existingUser) {
-      throw new Error('An account with that email already exists');
+      throw new Error('That username is already taken');
     }
 
     const passwordHash = await hashPassword(password);

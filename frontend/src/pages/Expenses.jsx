@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useFinance } from '../hooks/useFinance';
-import { FaCreditCard } from 'react-icons/fa6';
+import { FaArrowDown } from 'react-icons/fa6';
 import { formatCurrency } from '../utils/storage';
 
 export function Expenses() {
@@ -14,7 +14,7 @@ export function Expenses() {
   });
 
   if (loading || !data) {
-    return <><h1 className="page-title">Expenses</h1><p>Loading...</p></>;
+    return <><h1 className="page-title"><FaArrowDown style={{ display: 'inline', marginRight: '8px' }} /> Expenses</h1><p>Loading...</p></>;
   }
 
   const categories = ['Food', 'Transport', 'Entertainment', 'Utilities', 'Healthcare', 'Shopping', 'Other'];
@@ -46,7 +46,7 @@ export function Expenses() {
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1 className="page-title"><FaCreditCard style={{ display: 'inline', marginRight: '8px' }} /> Expenses</h1>
+        <h1 className="page-title"><FaArrowDown style={{ display: 'inline', marginRight: '8px' }} /> Expenses</h1>
         <button 
           className="btn btn-primary"
           onClick={() => setShowForm(!showForm)}

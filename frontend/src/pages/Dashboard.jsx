@@ -1,5 +1,5 @@
 import { useFinance } from '../hooks/useFinance';
-import { FaChartBar, FaChartLine } from 'react-icons/fa6';
+import { FaHouse, FaChartLine } from 'react-icons/fa6';
 import { 
   formatCurrency, 
   calculateTotalAssets, 
@@ -13,7 +13,7 @@ export function Dashboard() {
   const { data, loading } = useFinance();
 
   if (loading || !data) {
-    return <><h1 className="page-title">Dashboard</h1><p>Loading...</p></>;
+    return <><h1 className="page-title"><FaHouse style={{ display: 'inline', marginRight: '8px' }} /> Dashboard</h1><p>Loading...</p></>;
   }
 
   const totalAssets = calculateTotalAssets(data.assets);
@@ -27,17 +27,15 @@ export function Dashboard() {
       <div className="dashboard-hero">
         <div>
           <div className="hero-pill">Welcome back</div>
-          <h1 className="page-title"><FaChartBar style={{ display: 'inline', marginRight: '8px' }} /> Dashboard</h1>
+          <h1 className="page-title"><FaHouse style={{ display: 'inline', marginRight: '8px' }} /> Dashboard</h1>
           <p className="hero-copy">Track every milestone, stay on top of spending, and keep your goals moving with a calmer view of your money.</p>
         </div>
         <div className="hero-summary">
           <div>
-            <span className="summary-label">Net worth</span>
-            <strong>{formatCurrency(netWorth)}</strong>
+          
           </div>
           <div>
-            <span className="summary-label">This month</span>
-            <strong>{formatCurrency(monthlyExpenses)}</strong>
+           
           </div>
         </div>
       </div>

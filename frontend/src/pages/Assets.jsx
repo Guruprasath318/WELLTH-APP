@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useFinance } from '../hooks/useFinance';
-import { FaBriefcase } from 'react-icons/fa6';
+import { FaWallet } from 'react-icons/fa6';
 import { formatCurrency } from '../utils/storage';
 
 export function Assets() {
@@ -14,7 +14,7 @@ export function Assets() {
   });
 
   if (loading || !data) {
-    return <><h1 className="page-title">Assets</h1><p>Loading...</p></>;
+    return <><h1 className="page-title"><FaWallet style={{ display: 'inline', marginRight: '8px' }} /> Wealth</h1><p>Loading...</p></>;
   }
 
   const assetTypes = ['Bank Account', 'Savings', 'Investment', 'Property', 'Vehicle', 'Cryptocurrency', 'Other'];
@@ -46,7 +46,7 @@ export function Assets() {
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1 className="page-title"><FaBriefcase style={{ display: 'inline', marginRight: '8px' }} /> Assets</h1>
+        <h1 className="page-title"><FaWallet style={{ display: 'inline', marginRight: '8px' }} /> Wealth</h1>
         <button 
           className="btn btn-primary"
           onClick={() => setShowForm(!showForm)}

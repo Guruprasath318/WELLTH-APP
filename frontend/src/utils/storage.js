@@ -23,9 +23,19 @@ export const defaultData = {
 };
 
 // Local Storage Functions
+function getFinanceStorageKey() {
+  try {
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const username = user?.username?.trim().toLowerCase();
+    return username ? `financeData:${username}` : 'financeData';
+  } catch {
+    return 'financeData';
+  }
+}
+
 export function getFromStorage() {
   try {
-    const stored = localStorage.getItem('financeData');
+    const stored = localStorage.getItem(getFinanceStorageKey());
     if (!stored) return defaultData;
     
     const parsed = JSON.parse(stored);
@@ -51,7 +61,7 @@ export function getFromStorage() {
 
 export function saveToStorage(data) {
   try {
-    localStorage.setItem('financeData', JSON.stringify(data));
+    localStorage.setItem(getFinanceStorageKey(), JSON.stringify(data));
   } catch (error) {
     console.error('Error writing to localStorage:', error);
   }

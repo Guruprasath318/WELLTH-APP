@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useFinance } from '../hooks/useFinance';
 import { useAuth } from '../hooks/useAuth';
 import { useDarkMode } from '../hooks/useDarkMode';
-import { FaMoon, FaSun, FaUser, FaRightFromBracket, FaGear, FaBars, FaXmark, FaBell, FaChartSimple } from 'react-icons/fa6';
+import { FaMoon, FaSun, FaUser, FaRightFromBracket, FaGear, FaBars, FaXmark } from 'react-icons/fa6';
 
 export function Navbar({ onMenuToggle = () => {}, isMobileMenuOpen = false, sidebarMode = 'expanded' }) {
   const navigate = useNavigate();
@@ -51,24 +51,13 @@ export function Navbar({ onMenuToggle = () => {}, isMobileMenuOpen = false, side
 
         <div className="navbar-brand">
           <img src="/Wellth.jpg" alt="WELLTH Logo" className="navbar-logo" />
-          <div>
-            <span className="navbar-title">WELLTH APP</span>
-            <div className="navbar-subtitle">Daily finance clarity</div>
-          </div>
+          <span className="navbar-title">WELLTH APP</span>
         </div>
       </div>
 
       <div className="navbar-right">
         <button className="navbar-btn" onClick={toggleDarkMode} aria-label="Toggle Dark Mode" title="Toggle Dark Mode">
           {darkMode ? <FaSun size={18} /> : <FaMoon size={18} />}
-        </button>
-
-        <button className="navbar-btn" aria-label="Market overview" title="Market overview">
-          <FaChartSimple size={18} />
-        </button>
-
-        <button className="navbar-btn" aria-label="Notifications" title="Notifications">
-          <FaBell size={18} />
         </button>
 
         <div className="navbar-profile" ref={profileRef}>
