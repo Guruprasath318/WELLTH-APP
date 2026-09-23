@@ -148,7 +148,7 @@ router.post('/logout', authenticateToken, (req, res) => {
   res.json({ success: true, message: 'Logged out successfully' });
 });
 
-router.post('/change-password', [
+router.post('/change-password', authenticateToken, [
   body('currentPassword').isString().notEmpty().withMessage('Current password is required'),
   body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters'),
   body('confirmPassword').isString().withMessage('Please confirm your new password')

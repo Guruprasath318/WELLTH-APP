@@ -1,22 +1,25 @@
 import { useState, useCallback, useEffect, createContext, useContext } from 'react';
 import { getFromStorage, saveToStorage, defaultData } from '../utils/storage';
+import { useAuth } from './useAuth';
 
 const FinanceContext = createContext();
 
 export function FinanceProvider({ children }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { user, token } = useAuth();
 
   useEffect(() => {
-    // Try loading from localStorage first for fast initial render
+    let cancelled = false;
     const initialData = getFromStorage();
     setData(initialData);
-    setLoading(false);
+    setLoading(true);
 
-    // Then try fetching from backend API if authenticated
     const fetchFromAPI = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) return;
+      if (!token || !user) {
+        setLoading(false);
+        return;
+      }
 
       try {
         const response = await fetch('/api/data', {
@@ -25,26 +28,36 @@ export function FinanceProvider({ children }) {
           }
         });
 
-        if (response.ok) {
-          const apiData = await response.json();
-          // Merge API data with localStorage data (API takes precedence)
-          const merged = {
-            ...initialData,
-            ...apiData,
-            incomes: apiData.income || apiData.incomes || initialData.incomes || [],
-            income: apiData.income || initialData.income || [],
-            profile: { ...defaultData.profile, ...initialData.profile, ...apiData.profile }
-          };
-          setData(merged);
-          saveToStorage(merged);
+        if (!response.ok) {
+          throw new Error(`Could not load account data (${response.status})`);
+        }
+
+        const apiData = await response.json();
+        const serverData = {
+          ...defaultData,
+          ...apiData,
+          incomes: apiData.income || apiData.incomes || [],
+          income: apiData.income || [],
+          profile: { ...defaultData.profile, ...apiData.profile }
+        };
+
+        if (!cancelled) {
+          setData(serverData);
+          saveToStorage(serverData);
         }
       } catch (err) {
-        console.warn('Could not fetch from API, using localStorage data:', err.message);
+        console.error('Could not load account data:', err.message);
+        if (!cancelled) {
+          setData(defaultData);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchFromAPI();
-  }, []);
+    return () => { cancelled = true; };
+  }, [user, token]);
 
   const updateData = useCallback((newData) => {
     setData(newData);

@@ -12,17 +12,37 @@ export function AuthProvider({ children }) {
     const savedUser = localStorage.getItem('user');
     const savedToken = localStorage.getItem('token');
 
-    if (savedUser && savedToken) {
+    const restoreSession = async () => {
+      if (!savedUser || !savedToken) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        setUser(JSON.parse(savedUser));
+        JSON.parse(savedUser);
+        const API_URL = import.meta.env.VITE_API_URL || '/api';
+        const response = await fetch(`${API_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${savedToken}` },
+        });
+
+        if (!response.ok) {
+          throw new Error('Stored session is no longer valid');
+        }
+
+        const data = await response.json();
+        localStorage.setItem('user', JSON.stringify(data.user));
+        setUser(data.user);
         setToken(savedToken);
       } catch (err) {
-        console.error('Failed to parse stored user data:', err);
+        console.warn('Clearing invalid stored session:', err.message);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+      } finally {
+        setLoading(false);
       }
-    }
-    setLoading(false);
+    };
+
+    restoreSession();
   }, []);
 
   const login = async (username, password) => {
